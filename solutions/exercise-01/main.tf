@@ -78,7 +78,7 @@ resource "aws_security_group_rule" "allow_http_inbound" {
 }
 
 resource "aws_security_group_rule" "allow_ssh_inbound" {
-  type              = "ingress"
+  type              = "egress"
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
