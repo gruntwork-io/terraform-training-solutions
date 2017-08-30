@@ -126,7 +126,9 @@ resource "aws_security_group_rule" "web_server_allow_http_inbound" {
   to_port           = "${var.server_http_port}"
   protocol          = "tcp"
   security_group_id = "${aws_security_group.web_server.id}"
-  cidr_blocks       = ["0.0.0.0/0"]
+
+  # Only allow incoming requests from the ALB
+  source_security_group_id = "${aws_security_group.alb.id}"
 }
 
 resource "aws_security_group_rule" "web_server_allow_ssh_inbound" {
@@ -158,6 +160,7 @@ resource "aws_alb" "web_servers" {
   name            = "${var.name}"
   security_groups = ["${aws_security_group.alb.id}"]
   subnets         = ["${data.aws_subnet_ids.default.ids}"]
+  internal        = "${var.is_internal_alb}"
 
   # This is here because aws_alb_listener.htp depends on this resource and sets create_before_destroy to true
   lifecycle {

@@ -15,6 +15,10 @@ variable "user_data_script_name" {
   description = "The name of the User Data script in this module's user-data folder that this microservice should run when it's booting. Should be one of user-data-backend.sh or user-data-frontend.sh."
 }
 
+variable "is_internal_alb" {
+  description = "If set to true, the ALB will be internal, and therefore only accessible from within the VPC"
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.
