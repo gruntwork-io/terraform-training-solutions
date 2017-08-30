@@ -18,8 +18,9 @@ resource "aws_autoscaling_group" "microservice" {
 
   # Automatically register this ASG's Instances in the ALB and use the ALB's health check to determine when an Instance
   # needs to be replaced
-  health_check_type = "ELB"
-  target_group_arns = ["${aws_alb_target_group.web_servers.arn}"]
+  health_check_type         = "ELB"
+  health_check_grace_period = 30
+  target_group_arns         = ["${aws_alb_target_group.web_servers.arn}"]
 
   tag {
     key                 = "Name"
