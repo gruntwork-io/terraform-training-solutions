@@ -36,3 +36,8 @@ variable "http_port" {
   description = "The port the EC2 Instance should listen on for HTTP requests"
   default     = 8080
 }
+
+variable "server_text" {
+  description = "The text the server should return for HTTP requests"
+  default     = "Hello, World"
+}

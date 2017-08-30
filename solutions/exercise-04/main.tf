@@ -64,7 +64,7 @@ resource "aws_launch_configuration" "web_servers" {
   # install the web server and its dependencies in the AMI.
   user_data = <<-EOF
               #!/bin/bash
-              echo "Hello, World" > index.html
+              echo "${var.server_text}" > index.html
               nohup busybox httpd -f -p "${var.web_server_http_port}" &
               EOF
 

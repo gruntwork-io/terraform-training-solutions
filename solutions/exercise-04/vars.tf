@@ -41,3 +41,8 @@ variable "alb_http_port" {
   description = "The port the ALB should listen on for HTTP requests"
   default     = 80
 }
+
+variable "server_text" {
+  description = "The text the server should return for HTTP requests"
+  default     = "Hello, World"
+}

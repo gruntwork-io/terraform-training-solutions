@@ -22,7 +22,7 @@ resource "aws_instance" "web_server" {
   # install the web server and its dependencies in the AMI.
   user_data = <<-EOF
               #!/bin/bash
-              echo "Hello, World" > index.html
+              echo "${var.server_text}" > index.html
               nohup busybox httpd -f -p "${var.http_port}" &
               EOF
 
