@@ -263,6 +263,26 @@ resource "aws_security_group_rule" "allow_all_outbound" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
+# CREATE AN OPTIONAL ROUTE 53 HEALTH CHECK
+# This is only created if the ALB is not internal
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "aws_route53_health_check" "service_up" {
+  count = "${1 - var.is_internal_alb}"
+
+  type = "HTTP"
+  fqdn = "${aws_alb.web_servers.dns_name}"
+  port = "${var.alb_http_port}"
+
+  failure_threshold = 2
+  request_interval  = 30
+
+  tags {
+    Name = "${var.name}-${aws_alb.web_servers.dns_name}"
+  }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
 # DEPLOY INTO THE DEFAULT VPC AND SUBNETS
 # To keep this example simple, we are deploying into the Default VPC and its subnets. In real-world usage, you should
 # deploy into a custom VPC and private subnets.
