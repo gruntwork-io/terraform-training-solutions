@@ -1,0 +1,34 @@
+{
+  "variables": {
+    "aws_region": "us-east-1"
+  },
+  "builders": [{
+    "ami_name": "iac-workshop-sample-backend-{{isotime | clean_ami_name}}",
+    "ami_description": "A sample backend app on top of Ubuntu",
+    "instance_type": "t2.micro",
+    "region": "{{user `aws_region`}}",
+    "type": "amazon-ebs",
+    "source_ami_filter": {
+      "filters": {
+        "virtualization-type": "hvm",
+        "architecture": "x86_64",
+        "name": "*ubuntu-xenial-16.04-amd64-server-*",
+        "block-device-mapping.volume-type": "gp2",
+        "root-device-type": "ebs"
+      },
+      "owners": ["099720109477"],
+      "most_recent": true
+    },
+    "ssh_username": "ubuntu",
+    "encrypt_boot": false
+  }],
+  "provisioners": [{
+    "type": "file",
+    "source": "{{template_dir}}/app.rb",
+    "destination": "/tmp/app.rb"
+  },{
+    "type": "shell",
+    "pause_before": "30s",
+    "script": "{{template_dir}}/configure-backend.sh"
+  }]
+}
