@@ -11,12 +11,15 @@ provider "aws" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_autoscaling_group" "web_servers" {
-  name                 = "${var.name}"
+  # Note that we intentionally depend on the Launch Configuration name so that creating a new Launch Configuration
+  # (e.g. to deploy a new AMI) creates a new Auto Scaling Group. This will allow for rolling deployments.
+  name                 = "${aws_launch_configuration.web_servers.name}"
   launch_configuration = "${aws_launch_configuration.web_servers.name}"
 
   min_size         = 3
   max_size         = 3
   desired_capacity = 3
+  min_elb_capacity = 3
 
   # Deploy all the subnets (and therefore AZs) available
   vpc_zone_identifier = ["${data.aws_subnet_ids.default.ids}"]
@@ -31,6 +34,18 @@ resource "aws_autoscaling_group" "web_servers" {
     value               = "${var.name}"
     propagate_at_launch = true
   }
+
+  # To support rolling deployments, we tell Terraform to create a new ASG before deleting the old one. Note: as
+  # soon as you set create_before_destroy = true in one resource, you must also set it in every resource that it
+  # depends on, or you'll get an error about cyclic dependencies (especially when removing resources).
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  # This needs to be here to ensure the ALB has at least one listener rule before the ASG is created. Otherwise, on the
+  # very first deployment, the ALB won't bother doing any health checks, which means min_elb_capacity will not be
+  # achieved, and the whole deployment will fail.
+  depends_on = ["aws_alb_listener.http"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -52,6 +67,13 @@ resource "aws_launch_configuration" "web_servers" {
               echo "Hello, World" > index.html
               nohup busybox httpd -f -p "${var.web_server_http_port}" &
               EOF
+
+  # When used with an aws_autoscaling_group resource, the aws_launch_configuration must set create_before_destroy to
+  # true. Note: as soon as you set create_before_destroy = true in one resource, you must also set it in every resource
+  # that it depends on, or you'll get an error about cyclic dependencies (especially when removing resources).
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -88,7 +110,14 @@ data "aws_ami" "ubuntu" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_security_group" "web_server" {
-  name = "${var.name}"
+  name   = "${var.name}"
+  vpc_id = "${data.aws_vpc.default.id}"
+
+  # This is here because aws_launch_configuration.web_servers sets create_before_destroy to true and depends on this
+  # resource
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group_rule" "web_server_allow_http_inbound" {
@@ -129,6 +158,11 @@ resource "aws_alb" "web_servers" {
   name            = "${var.name}"
   security_groups = ["${aws_security_group.alb.id}"]
   subnets         = ["${data.aws_subnet_ids.default.ids}"]
+
+  # This is here because aws_alb_listener.htp depends on this resource and sets create_before_destroy to true
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -143,6 +177,12 @@ resource "aws_alb_listener" "http" {
   default_action {
     type             = "forward"
     target_group_arn = "${aws_alb_target_group.web_servers.arn}"
+  }
+
+  # This is here because aws_autoscaling_group.web_servers depends on this resource and sets create_before_destroy
+  # to true
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -163,6 +203,12 @@ resource "aws_alb_target_group" "web_servers" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 5
+  }
+
+  # This is here because aws_autoscaling_group.web_servers depends on this resource and sets create_before_destroy
+  # to true
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -190,7 +236,8 @@ resource "aws_alb_listener_rule" "send_all_to_web_servers" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_security_group" "alb" {
-  name = "${var.name}-alb"
+  name   = "${var.name}-alb"
+  vpc_id = "${data.aws_vpc.default.id}"
 }
 
 resource "aws_security_group_rule" "alb_allow_http_inbound" {
