@@ -27,7 +27,12 @@ variable "key_name" {
   default     = ""
 }
 
-variable "server_text" {
-  description = "The text the server should return for HTTP requests"
-  default     = "Hello, World"
+variable "frontend_server_text" {
+  description = "The text the frontend should return for HTTP requests"
+  default     = "Hello from frontend"
+}
+
+variable "backend_server_text" {
+  description = "The text the backend should return for HTTP requests"
+  default     = "Hello from backend"
 }
