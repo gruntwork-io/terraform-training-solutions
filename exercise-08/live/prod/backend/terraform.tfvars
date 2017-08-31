@@ -30,17 +30,14 @@ terragrunt = {
 # These are the variables we have to pass in to use the module specified in the terragrunt configuration above
 # ---------------------------------------------------------------------------------------------------------------------
 
-aws_region = "us-east-1"
-
+aws_region      = "us-east-1"
 name            = "backend-stage"
 size            = 2
 is_internal_alb = true
+server_text     = "Hello from backend"
+key_name        = ""
 
 # TODO: fill in the ID of the AMI to run for the backend microservice
-# ami_id        = ""
+# ami_id = ""
 
-user_data_script_name = "user-data-backend.sh"
-server_text           = "Hello from backend"
 
-# Provide a Key Pair name here to be able to SSH to the servers. Leave empty if you don't want to associate a Key Pair.
-key_name = ""

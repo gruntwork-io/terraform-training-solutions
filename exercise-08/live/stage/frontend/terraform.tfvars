@@ -30,23 +30,18 @@ terragrunt = {
 # These are the variables we have to pass in to use the module specified in the terragrunt configuration above
 # ---------------------------------------------------------------------------------------------------------------------
 
-aws_region = "us-east-1"
-
+aws_region      = "us-east-1"
 name            = "frontend-stage"
 size            = 2
 is_internal_alb = false
+server_text     = "Hello from frontend"
+key_name        = ""
+
+include_backend_url         = true
+backend_remote_state_s3_key = "exercise-08/stage/backend/terraform.tfstate"
 
 # TODO: fill in the ID of the AMI to run for the frontend microservice
-# ami_id          = ""
-
-user_data_script_name = "user-data-frontend.sh"
-server_text           = "Hello from frontend"
-
-# Provide a Key Pair name here to be able to SSH to the servers. Leave empty if you don't want to associate a Key Pair.
-key_name = ""
-
-include_backend_url            = true
-backend_remote_state_s3_key    = "exercise-08/stage/backend/terraform.tfstate"
+# ami_id = ""
 
 # TODO: fill in the variables below with the name/path of the S3 bucket where the backend stores its remote state
 # backend_remote_state_s3_bucket = ""

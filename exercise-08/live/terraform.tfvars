@@ -6,10 +6,12 @@ terragrunt = {
     backend = "s3"
     config {
       region     = "us-east-1"
-      # TODO: fill in the name of the S3 bucket where these modules should store remote state
-      # bucket     = ""
       key        = "exercise-08/${path_relative_to_include()}/terraform.tfstate"
       encrypt    = true
+
+      # TODO: fill in the name of the S3 bucket where these modules should store remote state
+      # bucket     = ""
+
       # TODO: fill in the name of a DynamoDB table that can be used for locking
       # lock_table = ""
     }
