@@ -10,4 +10,4 @@ set -e
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 # Run the frontend app
-nohup ruby /home/ubuntu/app.rb "${server_http_port}" "${server_text}" "${backend_url}" &
+nohup ruby /home/ubuntu/app.rb "${server_http_port}" "${server_text}"${backend_url == "" ? "" : " ${backend_url}"} &

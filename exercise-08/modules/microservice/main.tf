@@ -81,12 +81,12 @@ resource "aws_launch_configuration" "microservice" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 data "template_file" "user_data" {
-  template = "${file("${path.module}/user-data/${var.user_data_script_name}")}"
+  template = "${file("${path.module}/user-data/user-data.sh")}"
 
   vars {
     server_text      = "${var.server_text}"
     server_http_port = "${var.server_http_port}"
-    backend_url      = "${var.include_backend_url ? data.terraform_remote_state.backend.url : ""}"
+    backend_url      = "${var.include_backend_url ? join(",", data.terraform_remote_state.backend.*.url) : ""}"
   }
 }
 
