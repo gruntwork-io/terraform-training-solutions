@@ -12,8 +12,9 @@ Note that we use [Terragrunt](https://github.com/gruntwork-io/terragrunt) to kee
 
 ## Quick start
 
+*Note: you must deploy the backend in each environment before the frontend!*
 
-To deploy these module:
+To deploy these modules:
 
 1. Install [Terraform](https://www.terraform.io/)
 
