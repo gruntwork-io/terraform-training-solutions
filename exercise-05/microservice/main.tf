@@ -201,6 +201,12 @@ resource "aws_alb_target_group" "web_servers" {
   protocol = "HTTP"
   vpc_id   = "${data.aws_vpc.default.id}"
 
+  # Give existing connections 10 seconds to complete before deregistering an instance. The default delay is 300 seconds
+  # (5 minutes), which significantly slows down redeploys. In theory, the ALB should deregister the instance as long as
+  # there are no open connections; in practice, it waits the full five minutes every time. If your requests are
+  # generally processed quickly, set this to something lower (such as 10 seconds) to keep redeploys fast.
+  deregistration_delay = 10
+
   health_check {
     path                = "/"
     interval            = 15
