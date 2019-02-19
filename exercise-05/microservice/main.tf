@@ -5,7 +5,8 @@
 resource "aws_autoscaling_group" "microservice" {
   # Note that we intentionally depend on the Launch Configuration name so that creating a new Launch Configuration
   # (e.g. to deploy a new AMI) creates a new Auto Scaling Group. This will allow for rolling deployments.
-  name                 = "${aws_launch_configuration.microservice.name}"
+  name = "${aws_launch_configuration.microservice.name}"
+
   launch_configuration = "${aws_launch_configuration.microservice.name}"
 
   min_size         = "${var.size}"
@@ -18,7 +19,8 @@ resource "aws_autoscaling_group" "microservice" {
 
   # Automatically register this ASG's Instances in the ALB and use the ALB's health check to determine when an Instance
   # needs to be replaced
-  health_check_type         = "ELB"
+  health_check_type = "ELB"
+
   health_check_grace_period = 30
   target_group_arns         = ["${aws_alb_target_group.web_servers.arn}"]
 

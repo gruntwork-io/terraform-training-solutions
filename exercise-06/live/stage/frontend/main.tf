@@ -48,6 +48,7 @@ module "frontend" {
 
 data "terraform_remote_state" "backend" {
   backend = "s3"
+
   config {
     region = "${var.aws_region}"
     bucket = "${var.backend_remote_state_s3_bucket}"
