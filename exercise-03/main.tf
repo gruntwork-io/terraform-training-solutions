@@ -2,6 +2,15 @@
 # DEPLOY MULTIPLE EC2 INSTANCES THAT RUN A SIMPLE WEB SERVER
 # ---------------------------------------------------------------------------------------------------------------------
 
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "4.18.0"
+    }
+  }
+}
+
 provider "aws" {
   region = "${var.aws_region}"
 }
@@ -28,7 +37,7 @@ resource "aws_instance" "web_server" {
               nohup busybox httpd -f -p "${var.http_port}" &
               EOF
 
-  tags {
+  tags = {
     Name = "${element(var.names, count.index)}"
   }
 }

@@ -35,5 +35,6 @@ module "backend" {
   key_name              = "${var.key_name}"
   user_data_script_name = "user-data-backend.sh"
   server_text           = "${var.backend_server_text}"
-  is_internal_alb       = true
+  is_internal_alb       = 0
+  is_internal_alb_bool  = true
 }

@@ -2,8 +2,17 @@
 # DEPLOY A SIMPLE WEB SERVER ON A SINGLE EC2 INSTANCE
 # ---------------------------------------------------------------------------------------------------------------------
 
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "4.18.0"
+    }
+  }
+}
+
 provider "aws" {
-  region = "${var.aws_region}"
+  region = var.aws_region
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -12,7 +21,7 @@ provider "aws" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_instance" "web_server" {
-  ami           = "${data.aws_ami.ubuntu.id}"
+  ami           = "099720109477"
   instance_type = "t2.micro"
 
   key_name               = "${var.key_name}"
@@ -26,7 +35,7 @@ resource "aws_instance" "web_server" {
               nohup busybox httpd -f -p "${var.http_port}" &
               EOF
 
-  tags {
+  tags = {
     Name = "${var.name}"
   }
 }
@@ -34,31 +43,6 @@ resource "aws_instance" "web_server" {
 # ---------------------------------------------------------------------------------------------------------------------
 # FOR THIS EXAMPLE, WE JUST RUN A PLAIN UBUNTU 16.04 AMI
 # ---------------------------------------------------------------------------------------------------------------------
-
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"] # Canonical
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-
-  filter {
-    name   = "image-type"
-    values = ["machine"]
-  }
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
-  }
-}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # CREATE A SECURITY GROUP TO CONTROL WHAT TRAFFIC CAN GO IN AND OUT OF THE EC2 INSTANCE

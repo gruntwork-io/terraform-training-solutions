@@ -1,6 +1,16 @@
+
 # ---------------------------------------------------------------------------------------------------------------------
 # DEPLOY AN AUTO SCALING GROUP (ASG) WITH AN APPLICATION LOAD BALANCER (ALB) IN FRONT OF IT
 # ---------------------------------------------------------------------------------------------------------------------
+
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "4.18.0"
+    }
+  }
+}
 
 provider "aws" {
   region = "${var.aws_region}"
@@ -23,7 +33,7 @@ resource "aws_autoscaling_group" "web_servers" {
   min_elb_capacity = 3
 
   # Deploy all the subnets (and therefore AZs) available
-  vpc_zone_identifier = ["${data.aws_subnet_ids.default.ids}"]
+  vpc_zone_identifier = [data.aws_subnets.default.id]
 
   # Automatically register this ASG's Instances in the ALB and use the ALB's health check to determine when an Instance
   # needs to be replaced
@@ -47,7 +57,7 @@ resource "aws_autoscaling_group" "web_servers" {
   # This needs to be here to ensure the ALB has at least one listener rule before the ASG is created. Otherwise, on the
   # very first deployment, the ALB won't bother doing any health checks, which means min_elb_capacity will not be
   # achieved, and the whole deployment will fail.
-  depends_on = ["aws_alb_listener.http"]
+  depends_on = [aws_alb_listener.http]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -159,7 +169,7 @@ resource "aws_security_group_rule" "web_server_allow_all_outbound" {
 resource "aws_alb" "web_servers" {
   name            = "${var.name}"
   security_groups = ["${aws_security_group.alb.id}"]
-  subnets         = ["${data.aws_subnet_ids.default.ids}"]
+  subnets         = [data.aws_subnets.default.id]
 
   # This is here because aws_alb_listener.htp depends on this resource and sets create_before_destroy to true
   lifecycle {
@@ -234,9 +244,11 @@ resource "aws_alb_listener_rule" "send_all_to_web_servers" {
   }
 
   condition {
-    field  = "path-pattern"
-    values = ["*"]
-  }
+    path_pattern {
+      values = ["*"]
+    }
+  }  
+
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -277,6 +289,5 @@ data "aws_vpc" "default" {
   default = true
 }
 
-data "aws_subnet_ids" "default" {
-  vpc_id = "${data.aws_vpc.default.id}"
+data "aws_subnets" "default" {
 }

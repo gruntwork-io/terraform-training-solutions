@@ -3,5 +3,5 @@ output "public_ips" {
 }
 
 output "urls" {
-  value = ["${formatlist("http://%s:%s", aws_instance.web_server.public_ip, var.http_port)}"]
+  value = ["${formatlist("http://%s:%s", aws_instance.web_server.*.public_ip, var.http_port)}"]
 }

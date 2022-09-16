@@ -35,7 +35,8 @@ module "frontend" {
   key_name              = "${var.key_name}"
   user_data_script_name = "user-data-frontend.sh"
   server_text           = "${var.frontend_server_text}"
-  is_internal_alb       = false
+  is_internal_alb       = 0
+  is_internal_alb_bool  = false
 
   # Pass an output from the backend remote state to the frontend module. This is the URL of the backend microservice,
   # which the frontend will use for "service calls"

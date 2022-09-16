@@ -23,7 +23,7 @@ variable "aws_region" {
 
 variable "names" {
   description = "The names for the EC2 Instances. The length of this list determines how many EC2 Instances to create."
-  type        = "list"
+  type        = list(string)
   default     = ["neo", "trinity", "morpheus"]
 }
 
