@@ -19,10 +19,6 @@ variable "is_internal_alb" {
   description = "If set to true, the ALB will be internal, and therefore only accessible from within the VPC"
 }
 
-variable "is_internal_alb_bool" {
-  description = "If set to true, the ALB will be internal, and therefore only accessible from within the VPC"
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.

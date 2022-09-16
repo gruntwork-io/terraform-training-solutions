@@ -15,7 +15,7 @@ resource "aws_autoscaling_group" "microservice" {
   min_elb_capacity = "${var.size}"
 
   # Deploy all the subnets (and therefore AZs) available
-  vpc_zone_identifier = [data.aws_subnets.default.id]
+  vpc_zone_identifier = ["${data.aws_subnet_ids.default.ids}"]
 
   # Automatically register this ASG's Instances in the ALB and use the ALB's health check to determine when an Instance
   # needs to be replaced
@@ -40,7 +40,7 @@ resource "aws_autoscaling_group" "microservice" {
   # This needs to be here to ensure the ALB has at least one listener rule before the ASG is created. Otherwise, on the
   # very first deployment, the ALB won't bother doing any health checks, which means min_elb_capacity will not be
   # achieved, and the whole deployment will fail.
-  depends_on = [aws_alb_listener.http]
+  depends_on = ["aws_alb_listener.http"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ resource "aws_launch_configuration" "microservice" {
 data "template_file" "user_data" {
   template = "${file("${path.module}/user-data/${var.user_data_script_name}")}"
 
-  vars = {
+  vars {
     server_text      = "${var.server_text}"
     server_http_port = "${var.server_http_port}"
     backend_url      = "${var.backend_url}"
@@ -162,8 +162,8 @@ resource "aws_security_group_rule" "web_server_allow_all_outbound" {
 resource "aws_alb" "web_servers" {
   name            = "${var.name}"
   security_groups = ["${aws_security_group.alb.id}"]
-  subnets         = ["${data.aws_subnets.default.id}"]
-  internal        = "${var.is_internal_alb_bool}"
+  subnets         = ["${data.aws_subnet_ids.default.ids}"]
+  internal        = "${var.is_internal_alb}"
 
   # This is here because aws_alb_listener.htp depends on this resource and sets create_before_destroy to true
   lifecycle {
@@ -238,9 +238,8 @@ resource "aws_alb_listener_rule" "send_all_to_web_servers" {
   }
 
   condition {
-    path_pattern {
-      values = ["*"]
-    }
+    field  = "path-pattern"
+    values = ["*"]
   }
 }
 
@@ -287,7 +286,7 @@ resource "aws_route53_health_check" "service_up" {
   failure_threshold = 2
   request_interval  = 30
 
-  tags = {
+  tags {
     Name = "${var.name}-${aws_alb.web_servers.dns_name}"
   }
 }
@@ -302,5 +301,6 @@ data "aws_vpc" "default" {
   default = true
 }
 
-data "aws_subnets" "default" {
+data "aws_subnet_ids" "default" {
+  vpc_id = "${data.aws_vpc.default.id}"
 }

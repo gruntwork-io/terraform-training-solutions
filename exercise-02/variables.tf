@@ -13,6 +13,7 @@
 
 variable "bucket_name" {
   description = "The name to use for the S3 bucket. Note that S3 bucket names must be globally unique across all AWS users!"
+  default = "this-is-our-bucket-name"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------

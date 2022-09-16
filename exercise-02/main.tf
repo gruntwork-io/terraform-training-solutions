@@ -29,11 +29,18 @@ provider "aws" {
 
 resource "aws_s3_bucket" "remote_state" {
   bucket = "${var.bucket_name}"
-  acl    = "private"
+}
 
-  versioning {
-    enabled = true
+resource "aws_s3_bucket_versioning" "remote_state" {
+  bucket = aws_s3_bucket.remote_state.id
+  versioning_configuration {
+    status = "Enabled"
   }
+}
+
+resource "aws_s3_bucket_acl" "remote_state" {
+  bucket = aws_s3_bucket.remote_state.id
+  acl = "private"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
