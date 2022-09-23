@@ -49,7 +49,7 @@ resource "aws_instance" "web_server" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_security_group" "web_server" {
-  name = "${var.name}"
+  name = "${var.name}-${terraform.workspace}"
 }
 
 resource "aws_security_group_rule" "allow_http_inbound" {

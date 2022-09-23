@@ -1,4 +1,4 @@
-# ---------------------------------------------------------------------------------------------------------------------
+q# ---------------------------------------------------------------------------------------------------------------------
 # ENVIRONMENT VARIABLES
 # Define these secrets as environment variables
 # ---------------------------------------------------------------------------------------------------------------------
@@ -10,14 +10,6 @@
 # REQUIRED PARAMETERS
 # You must provide a value for each of these parameters.
 # ---------------------------------------------------------------------------------------------------------------------
-
-variable "frontend_ami_id" {
-  description = "The ID of the AMI to run for the frontend microservice. This should be an AMI built the with the Packer template in exercise-07/packer/frontend/frontend.json."
-}
-
-variable "backend_ami_id" {
-  description = "The ID of the AMI to run for the backend microservice. This should be an AMI built the with the Packer template in exercise-07/packer/backend/backend.json."
-}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
@@ -32,11 +24,6 @@ variable "aws_region" {
 variable "key_name" {
   description = "The name of the EC2 Key Pair that can be used to SSH to the EC2 Instances. Leave blank to not associate a Key Pair with the Instances."
   default     = ""
-}
-
-variable "frontend_server_text" {
-  description = "The text the frontend should return for HTTP requests"
-  default     = "Hello from frontend"
 }
 
 variable "backend_server_text" {

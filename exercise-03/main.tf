@@ -76,7 +76,7 @@ data "aws_ami" "ubuntu" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_security_group" "web_server" {
-  name_prefix = "exercise-03-example"
+  name_prefix = "exercise-03-example-${terraform.workspace}"
 }
 
 resource "aws_security_group_rule" "allow_http_inbound" {

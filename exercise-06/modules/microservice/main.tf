@@ -5,7 +5,7 @@
 resource "aws_autoscaling_group" "microservice" {
   # Note that we intentionally depend on the Launch Configuration name so that creating a new Launch Configuration
   # (e.g. to deploy a new AMI) creates a new Auto Scaling Group. This will allow for rolling deployments.
-  name = "${aws_launch_configuration.microservice.name}"
+  name = "${aws_launch_configuration.microservice.name}-${terraform.workspace}"
 
   launch_configuration = "${aws_launch_configuration.microservice.name}"
 
@@ -113,7 +113,7 @@ data "aws_ami" "ubuntu" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_security_group" "web_server" {
-  name   = "${var.name}"
+  name   = "${var.name}-${terraform.workspace}"
   vpc_id = "${data.aws_vpc.default.id}"
 
   # This is here because aws_launch_configuration.web_servers sets create_before_destroy to true and depends on this
@@ -160,7 +160,7 @@ resource "aws_security_group_rule" "web_server_allow_all_outbound" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_alb" "web_servers" {
-  name            = "${var.name}"
+  name            = "${var.name}-${terraform.workspace}"
   security_groups = ["${aws_security_group.alb.id}"]
   subnets         = ["${data.aws_subnets.default.id}"]
   internal        = "${var.is_internal_alb_bool}"
@@ -198,7 +198,7 @@ resource "aws_alb_listener" "http" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_alb_target_group" "web_servers" {
-  name     = "${var.name}"
+  name     = "${var.name}-${terraform.workspace}"
   port     = "${var.server_http_port}"
   protocol = "HTTP"
   vpc_id   = "${data.aws_vpc.default.id}"
@@ -249,7 +249,7 @@ resource "aws_alb_listener_rule" "send_all_to_web_servers" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_security_group" "alb" {
-  name   = "${var.name}-alb"
+  name   = "${var.name}-${terraform.workspace}-alb"
   vpc_id = "${data.aws_vpc.default.id}"
 }
 

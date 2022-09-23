@@ -28,7 +28,7 @@ provider "aws" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_s3_bucket" "remote_state" {
-  bucket = "${var.bucket_name}"
+  bucket = "${var.bucket_name}-${terraform.workspace}"
 }
 
 resource "aws_s3_bucket_versioning" "remote_state" {
@@ -48,7 +48,7 @@ resource "aws_s3_bucket_acl" "remote_state" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_dynamodb_table" "terraform_locks" {
-  name           = "${var.dynamodb_lock_table_name}"
+  name           = "${var.dynamodb_lock_table_name}-${terraform.workspace}"
   read_capacity  = 1
   write_capacity = 1
   hash_key       = "LockID"

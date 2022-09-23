@@ -15,11 +15,11 @@ provider "aws" {
 # TODO: uncomment!!
 #terraform {
 #  backend "s3" {
-#    region         = "us-east-1"
+#    region         = "eu-central-1"
 #    bucket         = "iac-workshop-example-bucket"
-#    key            = "exercise-06/stage/backend/terraform.tfstate"
+#    key            = "exercise-06-${numele.vostru}/stage/backend/terraform.tfstate"
 #    encrypt        = true
-#    dynamodb_table = "terraform-locks-example"
+#    dynamodb_table = "terraform-locks-example-${numele.vostru}"
 #  }
 #}
 
